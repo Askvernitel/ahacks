@@ -6,78 +6,83 @@
 <title>BeeBuzz Monitor</title>
 <style>
   :root{
-    --bg:#0d1411; --panel:#13201a; --line:#1f3329;
-    --honey:#f4b400; --honey-soft:#f9d77a;
-    --calm:#3ddc97; --active:#f4b400; --alert:#ff5d5d;
-    --text:#e8f0ea; --muted:#8aa896;
+    --bg:#0f1311; --panel:#151a17; --line:#262e29;
+    --honey:#e0a92e;
+    --calm:#4cae8a; --active:#d8a73a; --agitated:#e07a3a; --alarm:#d85656;
+    --text:#e6ebe7; --muted:#8a978f;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     font-family:"Segoe UI",system-ui,sans-serif;
-    background:radial-gradient(circle at 30% -10%,#1a2a20,#0d1411 60%);
-    color:var(--text);min-height:100vh;padding:24px;
+    background:var(--bg);
+    color:var(--text);min-height:100vh;padding:32px;
   }
-  header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
-  .logo{font-size:34px}
-  h1{font-size:24px;font-weight:700;letter-spacing:.5px}
+  header{margin-bottom:28px}
+  h1{font-size:20px;font-weight:600;letter-spacing:.3px}
   h1 span{color:var(--honey)}
-  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .sub{color:var(--muted);font-size:13px;margin-top:4px}
 
-  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:20px}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:24px}
   button{
-    background:var(--honey);color:#1b1300;border:none;font-weight:600;
-    padding:10px 18px;border-radius:10px;cursor:pointer;font-size:14px;
-    transition:transform .1s,filter .15s;
+    background:transparent;color:var(--text);border:1px solid var(--line);font-weight:500;
+    padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;
+    transition:border-color .15s,color .15s;
   }
-  button:hover{filter:brightness(1.08)}
-  button:active{transform:scale(.97)}
-  button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-  button:disabled{opacity:.4;cursor:not-allowed}
+  button:hover{border-color:var(--honey);color:var(--honey)}
+  button.primary{background:var(--honey);color:#1b1300;border-color:var(--honey)}
+  button.primary:hover{filter:brightness(1.05);color:#1b1300}
+  button:disabled{opacity:.35;cursor:not-allowed;border-color:var(--line);color:var(--text)}
   .status{margin-left:auto;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:7px}
-  .dot{width:10px;height:10px;border-radius:50%;background:#444}
-  .dot.on{background:var(--calm);box-shadow:0 0 10px var(--calm)}
+  .dot{width:8px;height:8px;border-radius:50%;background:#444}
+  .dot.on{background:var(--calm)}
 
-  .grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px}
+  .grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
   @media(max-width:820px){.grid{grid-template-columns:1fr}}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
-  .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:14px;font-weight:600}
 
-  canvas{width:100%;height:240px;display:block;border-radius:10px;background:#0a110d}
+  canvas{width:100%;height:240px;display:block;border-radius:8px;background:var(--bg)}
 
-  .readout{display:flex;align-items:baseline;gap:10px;margin:6px 0 16px}
-  .amp{font-size:54px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
-  .unit{color:var(--muted);font-size:14px}
+  .readout{display:flex;align-items:baseline;gap:8px;margin:4px 0 16px}
+  .amp{font-size:48px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .unit{color:var(--muted);font-size:13px}
 
   .level-card{
-    border-radius:12px;padding:16px;text-align:center;margin-bottom:16px;
-    transition:background .3s,box-shadow .3s;border:1px solid var(--line);
+    border-radius:8px;padding:14px;margin-bottom:16px;
+    border:1px solid var(--line);border-left-width:3px;
+    transition:border-color .25s;
   }
-  .level-name{font-size:22px;font-weight:700}
-  .level-desc{font-size:13px;color:var(--muted);margin-top:4px}
+  .level-name{font-size:18px;font-weight:600}
+  .level-desc{font-size:13px;color:var(--muted);margin-top:3px}
 
-  .levels{display:flex;flex-direction:column;gap:8px}
-  .lvl{display:flex;align-items:center;gap:10px;font-size:13px;opacity:.45;transition:opacity .2s}
+  .levels{display:flex;flex-direction:column;gap:6px}
+  .lvl{display:flex;align-items:center;gap:9px;font-size:13px;opacity:.4;transition:opacity .2s}
   .lvl.active{opacity:1}
-  .swatch{width:14px;height:14px;border-radius:4px}
+  .swatch{width:10px;height:10px;border-radius:3px}
   .lvl small{color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
 
-  .hint{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.5}
-  .hint code{background:#0a110d;padding:1px 5px;border-radius:4px;color:var(--honey-soft)}
+  .ai{margin-top:16px}
+  .ai-head{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+  .ai-head h2{margin:0}
+  .ai-body{font-size:13px;line-height:1.55;color:var(--text)}
+  .ai-body ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .ai-body li{display:flex;gap:9px;align-items:flex-start;color:var(--muted)}
+  .ai-body li::before{content:"›";color:var(--honey);font-weight:700}
+
+  .hint{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.6}
+  .hint code{background:var(--bg);padding:1px 5px;border-radius:4px;color:var(--honey)}
 </style>
 </head>
 <body>
   <header>
-    <div class="logo">🐝</div>
-    <div>
-      <h1>Bee<span>Buzz</span> Monitor</h1>
-      <div class="sub">Live hive acoustic activity from sound amplitude</div>
-    </div>
+    <h1>Bee<span>Buzz</span> Monitor</h1>
+    <div class="sub">Live hive acoustic activity from sound amplitude</div>
   </header>
 
   <div class="bar">
-    <button id="connectBtn">🔌 Connect Arduino (Serial)</button>
-    <button id="demoBtn" class="ghost">▶ Demo mode</button>
-    <button id="stopBtn" class="ghost" disabled>⏹ Stop</button>
+    <button id="connectBtn" class="primary">Connect Arduino (Serial)</button>
+    <button id="demoBtn">Demo mode</button>
+    <button id="stopBtn" disabled>Stop</button>
     <div class="status"><span class="dot" id="dot"></span><span id="statusText">Disconnected</span></div>
   </div>
 
@@ -102,15 +107,28 @@
       <div class="levels">
         <div class="lvl" data-lvl="0">
           <span class="swatch" style="background:var(--calm)"></span>
-          Calm hive <small>0–150</small>
+          Calm hive <small>0–50</small>
         </div>
         <div class="lvl" data-lvl="1">
           <span class="swatch" style="background:var(--active)"></span>
-          Active buzzing <small>150–400</small>
+          Active buzzing <small>50–70</small>
         </div>
         <div class="lvl" data-lvl="2">
-          <span class="swatch" style="background:var(--alert)"></span>
-          Agitated / alarm <small>400+</small>
+          <span class="swatch" style="background:var(--agitated)"></span>
+          Agitated <small>70–100</small>
+        </div>
+        <div class="lvl" data-lvl="3">
+          <span class="swatch" style="background:var(--alarm)"></span>
+          Alarm <small>100+</small>
+        </div>
+      </div>
+
+      <div class="ai panel" style="margin-top:16px;background:var(--bg)">
+        <div class="ai-head">
+          <h2>AI Suggestions</h2>
+        </div>
+        <div class="ai-body">
+          <ul id="aiList"><li>Waiting for hive data…</li></ul>
         </div>
       </div>
 
@@ -123,18 +141,39 @@
   </div>
 
 <script>
-// ---- Level thresholds (tune for your hive/mic) ----
+// ---- Level thresholds (50 / 70 / 100) ----
 const LEVELS = [
-  {name:"Calm hive",     desc:"Low, steady hum — the colony is at rest.",      color:"#3ddc97", max:150},
-  {name:"Active buzzing",desc:"Foraging & ventilation — normal busy activity.", color:"#f4b400", max:400},
-  {name:"Agitated",      desc:"Loud, sharp buzzing — stress, swarm or alarm.",  color:"#ff5d5d", max:Infinity},
+  {name:"Calm hive",     desc:"Low, steady hum — the colony is at rest.",       color:"#4cae8a", max:50,
+   tips:[
+     "All normal. Keep your usual inspection schedule.",
+     "Good time for non-urgent checks: stores, brood pattern.",
+   ]},
+  {name:"Active buzzing",desc:"Foraging & ventilation — normal busy activity.",  color:"#d8a73a", max:70,
+   tips:[
+     "Healthy daytime activity. No action needed.",
+     "Ensure entrance is unobstructed for foragers.",
+     "Watch for sustained rise toward agitation.",
+   ]},
+  {name:"Agitated",      desc:"Loud buzzing — heat, queen issue or disturbance.", color:"#e07a3a", max:100,
+   tips:[
+     "Check for overheating — add ventilation or shade.",
+     "Avoid opening the hive until activity settles.",
+     "Inspect for queen loss if it persists over hours.",
+   ]},
+  {name:"Alarm",         desc:"Very loud, sharp buzzing — stress, swarm or attack.", color:"#d85656", max:Infinity,
+   tips:[
+     "Possible swarm or predator — observe from a distance.",
+     "Do NOT open the hive now; bees are defensive.",
+     "Check entrance for wasps/hornets or robbing.",
+     "If swarming, prepare a catch box nearby.",
+   ]},
 ];
-function levelFor(a){ for(let i=0;i<LEVELS.length;i++) if(a<=LEVELS[i].max) return i; return 2; }
+function levelFor(a){ for(let i=0;i<LEVELS.length;i++) if(a<=LEVELS[i].max) return i; return LEVELS.length-1; }
 
 // ---- State ----
-const MAX_AMP = 700;              // visual ceiling
+const MAX_AMP = 140;             // visual ceiling
 const history = new Array(220).fill(0);
-let port, reader, running=false, demoTimer=null, t=0;
+let port, reader, running=false, demoTimer=null, t=0, lastLevel=-1;
 
 // ---- DOM ----
 const cv = document.getElementById('wave');
@@ -143,6 +182,7 @@ const ampVal = document.getElementById('ampVal');
 const levelCard = document.getElementById('levelCard');
 const levelName = document.getElementById('levelName');
 const levelDesc = document.getElementById('levelDesc');
+const aiList = document.getElementById('aiList');
 const dot = document.getElementById('dot');
 const statusText = document.getElementById('statusText');
 const lvlRows = [...document.querySelectorAll('.lvl')];
@@ -154,6 +194,16 @@ function resize(){ cv.width=cv.clientWidth*devicePixelRatio; cv.height=cv.client
 window.addEventListener('resize',resize); resize();
 
 function setStatus(text,on){ statusText.textContent=text; dot.classList.toggle('on',!!on); }
+
+function renderAI(li){
+  const L=LEVELS[li];
+  aiList.innerHTML="";
+  L.tips.forEach(tip=>{
+    const el=document.createElement('li');
+    el.textContent=tip;
+    aiList.appendChild(el);
+  });
+}
 
 // ---- Feed a new amplitude sample ----
 function pushSample(amp){
@@ -167,9 +217,10 @@ function pushSample(amp){
   levelName.textContent = L.name;
   levelName.style.color = L.color;
   levelDesc.textContent = L.desc;
-  levelCard.style.background = L.color+"18";
-  levelCard.style.boxShadow = "0 0 24px "+L.color+"30";
+  levelCard.style.borderLeftColor = L.color;
   lvlRows.forEach(r=>r.classList.toggle('active', +r.dataset.lvl===li));
+
+  if(li!==lastLevel){ renderAI(li); lastLevel=li; }
 }
 
 // ---- Render loop ----
@@ -180,31 +231,29 @@ function draw(){
   const color = LEVELS[levelFor(cur)].color;
 
   // grid line at center
-  ctx.strokeStyle="#1f3329"; ctx.lineWidth=1;
+  ctx.strokeStyle="#262e29"; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
 
   // waveform: mirror amplitude around center -> looks like a sound wave
   const n=history.length, step=w/(n-1);
   ctx.lineWidth=2*devicePixelRatio; ctx.strokeStyle=color;
-  ctx.shadowBlur=14; ctx.shadowColor=color;
   ctx.beginPath();
   for(let i=0;i<n;i++){
     const norm=Math.min(history[i]/MAX_AMP,1);
-    // animated oscillation scaled by amplitude => wave shape
     const wob=Math.sin(i*0.5 + t*0.25)*norm;
     const y=h/2 - wob*(h*0.45);
     i?ctx.lineTo(i*step,y):ctx.moveTo(0,y);
   }
   ctx.stroke();
   // mirrored bottom half (fainter) for symmetry
-  ctx.globalAlpha=.35; ctx.beginPath();
+  ctx.globalAlpha=.3; ctx.beginPath();
   for(let i=0;i<n;i++){
     const norm=Math.min(history[i]/MAX_AMP,1);
     const wob=Math.sin(i*0.5 + t*0.25)*norm;
     const y=h/2 + wob*(h*0.45);
     i?ctx.lineTo(i*step,y):ctx.moveTo(0,y);
   }
-  ctx.stroke(); ctx.globalAlpha=1; ctx.shadowBlur=0;
+  ctx.stroke(); ctx.globalAlpha=1;
 
   t++;
   requestAnimationFrame(draw);
@@ -255,9 +304,9 @@ function startDemo(){
   let phase=0;
   demoTimer=setInterval(()=>{
     phase+=0.05;
-    // wander between calm / active / agitated
-    const base=200+Math.sin(phase)*180+Math.sin(phase*0.27)*180;
-    const noise=(Math.random()-0.5)*120;
+    // wander across calm / active / agitated / alarm bands
+    const base=55+Math.sin(phase)*40+Math.sin(phase*0.27)*40;
+    const noise=(Math.random()-0.5)*25;
     pushSample(Math.max(0, base+noise));
   },60);
 }
